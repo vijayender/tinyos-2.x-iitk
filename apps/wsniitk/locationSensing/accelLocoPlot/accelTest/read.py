@@ -90,7 +90,7 @@ class Data(threading.Thread):
         self.am = tos.AM()
         self.xfil = KalmanFilter(532,1,1e-5,.1**2)
         self.yfil = KalmanFilter(304,1,1e-5,.1**2)
-        self.xr2a = RawToAccel(475,591,531)
+        self.xr2a = RawToAccel(475,591,533)
         self.a2x = IntegrateAccel(172,1e-3)
         self.discard1 = True
         self.xfilx = KalmanFilter(0,1,1e-5,1e-2)
@@ -109,7 +109,8 @@ class Data(threading.Thread):
             tx,x,ty,y = self.get_data()
             # print x
             #print self.xr2a.convert(x)
-            a =  self.xfilx.filter_data(self.xr2a.convert(x))
+            a =  np.array(self.xr2a.convert(x))
+            #a =  self.xfilx.filter_data(self.xr2a.convert(x))
             ox,v = self.a2x.synthesize_data(a,tx)
             # print self.a2x.synthesize_data(self.xr2a.convert(x),tx)
             # print tx
@@ -121,7 +122,7 @@ class Data(threading.Thread):
     def get_data(self):
         while 1:
             p = self.am.read()
-            if p:
+            if p.source == 2:
                 m = AccelPacket(p.data);
                 x = [ctypes.c_short(i<<8|j).value  for (i,j)\
                                 in zip(m.x[1::2],\
