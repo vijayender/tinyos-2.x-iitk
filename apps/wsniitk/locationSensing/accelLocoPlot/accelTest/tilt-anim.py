@@ -214,8 +214,8 @@ class Data2(threading.Thread):
         self.am = tos.AM()
         self.xfil = KalmanFilter(532,1,1e-5,.1**2)
         self.yfil = KalmanFilter(304,1,1e-5,.1**2)
-        self.xr2a = RawToAccel(475,591,531)
-	self.yr2a = RawToAccel(279,328,307)
+        self.xr2a = RawToAccel(475,591,533)
+	self.yr2a = RawToAccel(279,330,305)
         self.a2x = IntegrateAccel(172,1e-3)
         self.discard1 = True
         self.xfilx = KalmanFilter(0,1,1e-5,1e-2)
