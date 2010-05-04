@@ -1,5 +1,3 @@
-
-#include <HplRF230.h>
 #include "../RssiToA.h"
 #include "../lightdecoder/RssiTest.h"
 #define NUM 10
@@ -15,7 +13,7 @@ module mote1C {
     interface Timer<TMilli>;
     interface Timer<TMilli> as Timer2;
     interface SplitControl as AMControl;
-    interface PacketTimeStamp<TRF230, uint32_t> as PacketTimeStampRadio;
+    interface PacketTimeStamp<TRadio, uint32_t> as PacketTimeStampRadio;
     interface Packet;
     interface PacketField<uint8_t> as PacketRSSI;
     //    interface PacketField<uint8_t> as PacketTransmitPower;
