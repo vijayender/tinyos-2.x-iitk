@@ -1,0 +1,38 @@
+#ifndef ND_H
+#define ND_H
+
+#define TIMEOUT 1000
+
+typedef nx_struct command_msg {
+  nx_uint16_t cmd;
+} command_msg_t;
+
+typedef nx_struct neighbour_discover_msg {
+  nx_uint16_t leader;
+} neighbour_discover_msg_t;
+
+typedef nx_struct neighbour_data {
+  nx_uint16_t node_id;
+  nx_uint8_t p_db;
+} neighbour_data_t;
+
+#define MAXRETRIES 50
+
+enum {
+  AM_CONTROL_MSG = 3,
+  AM_ND_MSG = 4,
+  AM_NDATA_MSG = 5,
+  AM_RADIO_MSG = 6,
+  AM_COORD_MSG = 7,
+};
+
+enum {
+  HELLO,
+  START_DISCOVERY,
+  DISCOVERY_DONE,
+  GET_PDB,
+  GET_PDB_DONE,
+  TEST_IM,
+};
+
+#endif
