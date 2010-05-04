@@ -373,14 +373,14 @@ class SimpleAM(object):
             return ActiveMessage(NoAckDataFrame(f))
         return None
 
-    def write(self, packet, amId, timeout=5, blocking=True, inc=1):
+    def write(self, packet, amId, timeout=5, blocking=True, inc=1, dest=0xFFFF):
         self.seqno = (self.seqno + inc) % 256
         prevTimeout = self._source.getTimeout()
         ack = None
         end = None
         if timeout: end = time.time() + timeout
         while not end or time.time() < end:
-            self._hdlc.write(ActiveMessage(packet, amId=amId), seqno=self.seqno)
+            self._hdlc.write(ActiveMessage(packet, amId=amId, dest=dest), seqno=self.seqno)
             if not blocking:
                 return True
             start = time.time()
@@ -444,10 +444,10 @@ class AM(SimpleAM):
     def read(self, timeout=None):
         return self.oobHook(super(AM, self).read(timeout))
 
-    def write(self, packet, amId, timeout=None, blocking=True):
-        r = super(AM, self).write(packet, amId, timeout, blocking)
+    def write(self, packet, amId, timeout=None, blocking=True, dest=0xFFFF):
+        r = super(AM, self).write(packet, amId, timeout, blocking, dest=dest)
         while not r:
-            r = super(AM, self).write(packet, amId, timeout, blocking, inc=0)
+            r = super(AM, self).write(packet, amId, timeout, blocking, inc=0, dest=dest)
             if timeout and not r:
                raise Timeout
         return True
