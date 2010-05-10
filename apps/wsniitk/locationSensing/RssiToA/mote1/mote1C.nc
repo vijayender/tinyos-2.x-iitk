@@ -1,6 +1,6 @@
 #include "../RssiToA.h"
 #include "../lightdecoder/RssiTest.h"
-#define NUM 10
+#define NUM 30
 
 module mote1C {
   uses {
@@ -12,6 +12,7 @@ module mote1C {
     interface AMSend as pcCommunicator;
     interface Timer<TMilli>;
     interface Timer<TMilli> as Timer2;
+    interface Timer<TMilli> as dumpTimer;
     interface SplitControl as AMControl;
     interface PacketTimeStamp<TRadio, uint32_t> as PacketTimeStampRadio;
     interface Packet;
@@ -342,10 +343,14 @@ implementation {
     call Leds.led2On();
   }
 
+  event void dumpTimer.fired(){
+    post dumpData();
+  }
+
   event void pcCommunicator.sendDone(message_t* bufPtr, error_t error){
     if(error == SUCCESS){
       if(logAvailable)
-	post dumpData();
+	call dumpTimer.startOneShot(10);
       else{
 	pcentrycounter = 0;
 	logAvailable = TRUE;

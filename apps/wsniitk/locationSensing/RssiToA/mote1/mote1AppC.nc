@@ -12,6 +12,7 @@ implementation {
   components new AMSenderC(AM_RADIO_MSG) as pcCommunicator;
   components new TimerMilliC();
   components new TimerMilliC() as Timer2;
+  components new TimerMilliC() as dumpTimer;
   components new VoltageC();
   components ActiveMessageC;
   components RF230ActiveMessageC;
@@ -36,4 +37,6 @@ implementation {
   components new LogStorageC(VOLUME_LOGTEST, FALSE);
   App.LogRead -> LogStorageC;
   App.LogWrite -> LogStorageC;
+
+  App.dumpTimer -> dumpTimer;
 }
