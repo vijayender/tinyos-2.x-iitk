@@ -1,6 +1,6 @@
 #include "../RssiToA.h"
 #include "../lightdecoder/RssiTest.h"
-#define NUM 30
+#define NUM 10
 
 module mote1C {
   uses {

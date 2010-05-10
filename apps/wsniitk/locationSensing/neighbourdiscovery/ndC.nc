@@ -17,7 +17,7 @@ module ndC{
     interface AMSend as neighbour_discover_send;
 
     interface AMSend as neighbour_data_send;
-    interface AMSend as coordiante_send;
+    //    interface AMSend as coordinate_send;
 
     interface Receive as controller_receive;
     interface AMSend as controller_send;
@@ -270,7 +270,7 @@ implementation {
       post im_iterate();
   }
 
-  send_element (gsl_matrix *d) {
+  /* send_element (gsl_matrix *d) { */
     
-  }
+  /* } */
 }

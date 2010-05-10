@@ -35,8 +35,8 @@ implementation
   components new AMSenderC (AM_NDATA_MSG) as neighbour_data_send;
   App.neighbour_data_send -> neighbour_data_send;
 
-  components new AMSenderC (AM_COORD_MSG) as coordinate_send;
-  App.coordinate_send -> coordinate_send;
+  //  components new AMSenderC (AM_COORD_MSG) as coordinate_send;
+  //  App.coordinate_send -> coordinate_send;
   
   components new VarArrayC (neighbour_data_t, 8);
   App.neighbours -> VarArrayC;
