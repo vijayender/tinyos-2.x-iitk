@@ -1,6 +1,6 @@
 #ifndef RSSITOA_H
 #define RSSITOA_H
-
+#define RF230_RSSI_ENERGY
 typedef nx_struct control_msg {
   nx_uint16_t counter;
   nx_uint32_t tx_tmsp;
