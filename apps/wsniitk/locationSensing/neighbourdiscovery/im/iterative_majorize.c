@@ -35,15 +35,26 @@ iterative_majorizer_t * iterative_majorizer_alloc ()
 
 void iterative_majorizer_initialize (iterative_majorizer_t *s, gsl_matrix *x, gsl_matrix *d)
 {
-  s->d = d;
+  s->d = d;			/* Move initialisation of x & d
+				   outside this function, so that s
+				   can be freed easily */
   s->x = x;
   // Initialize the other variables
-  s->x_temp = gsl_matrix_alloc(x->size1, x->size2);
+  s->x_temp = gsl_matrix_alloc(x->size1, x->size2); 
   s->BZ = gsl_matrix_alloc(d->size1, d->size2);
   s->DZ = gsl_matrix_alloc(d->size1, d->size2);
   s->loss = loss_function_simple(s->x, s->d, -1);
 }
-
+void iterative_majorizer_free (iterative_majorizer_t *s)
+{
+  /* Free only d, as p will be reused.*/
+  free(s->DZ);
+  free(s->BZ);
+  free(s->x_temp);
+  free(s->x);
+  free(s->d);
+  free(s);
+}
 void iterative_majorizer_iterate (iterative_majorizer_t *s)
 {
   int i,j;

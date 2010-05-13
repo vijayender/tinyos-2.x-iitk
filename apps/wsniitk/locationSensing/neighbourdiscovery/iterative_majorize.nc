@@ -8,4 +8,5 @@ interface iterative_majorize {
   command void iterate ();
   command float test ();
   command void print_details ();
+  command void free ();
 }

@@ -28,6 +28,10 @@ implementation
   {
       iterative_majorizer_initialize(s, p, d);
   }
+  command void im.free()
+  {
+    iterative_majorizer_free(s);
+  }
   command gsl_matrix* im.get_d ()
   {
     return d;
@@ -63,6 +67,12 @@ implementation
     new_m->data = (float *) malloc (sizeof (float) * size1 * size2);
     return new_m;
   }
+  void gsl_matrix_free (gsl_matrix *_p) @C() 
+  {
+    free(_p->data);
+    free(_p);
+  }
+
   float gsl_matrix_get (gsl_matrix* x, int size1, int size2) @C()
   {
     return x->data[x->size2 * size1 + size2];

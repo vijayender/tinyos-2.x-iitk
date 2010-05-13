@@ -1,6 +1,6 @@
 #ifndef ND_H
 #define ND_H
-
+#define RF230_RSSI_ENERGY
 #define TIMEOUT 1000
 
 typedef nx_struct command_msg {
@@ -24,6 +24,7 @@ enum {
   AM_NDATA_MSG = 5,
   AM_RADIO_MSG = 6,
   AM_COORD_MSG = 7,
+  AM_DBG_MSG = 8,
 };
 
 enum {
@@ -33,6 +34,7 @@ enum {
   GET_PDB,
   GET_PDB_DONE,
   TEST_IM,
+  TEST_DEBUG,
 };
 
 #endif

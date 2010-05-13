@@ -17,6 +17,7 @@ typedef struct iterative_majorizer_t {
 
 iterative_majorizer_t * iterative_majorizer_alloc ();
 void iterative_majorizer_initialize (iterative_majorizer_t *s, gsl_matrix *x, gsl_matrix *d);
+void iterative_majorizer_free (iterative_majorizer_t *s);
 void iterative_majorizer_iterate (iterative_majorizer_t *s);
 int iterative_majorize_solve(gsl_matrix* _p, gsl_matrix*  _d, int _iters, float energy_limit, int verbose_mode, float *final_loss);
 #endif

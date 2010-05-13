@@ -4,6 +4,8 @@ import sys
 import tos
 import time
 import select
+from struct import *
+import array
 
 class Radio_packet(tos.Packet):
     def __init__(self, packet = None):
@@ -96,11 +98,22 @@ def run_command (cmd):
     elif (cmd == "test_im"):
         print "test_im .."
         send_command(5)
+    elif (cmd == "test_dbg"):
+        send_command (6)
     elif (cmd == None):
         pass
+    elif (cmd == "q") | (cmd == ""):
+        exit(0);
     else:
         print 'command not understood'
-    print ">> ",
+#    print ">> ",
+
+def packBits (p):
+    r = ''
+    for i in p:
+        r += chr(i)
+    return r
+
 
 def send_command (cmd):
     rp = Radio_packet ()
@@ -113,11 +126,37 @@ def read_loop():
     while True:
         i+=1
         if p:
-            print "%(d)5d"% {'d':i},p.type,p.source,p.group,p.destination, p.data
+            if p.type == 8 :
+                start = 0
+                end = len(p.data)
+                # print p.data
+                while start < end:
+                    if (p.data[start] == 1):
+                        print 'uint8_t:', p.data[start+1]
+                        start += 2
+                        pass
+                    elif (p.data[start] == 2):
+                        print 'uint16_t:', unpack('H', packBits(p.data[start+1:start+3]))
+                        start += 3
+                        pass
+                    elif (p.data[start] == 3):
+                        print 'uint32_t:', unpack('I', packBits(p.data[start+1:start+5]))
+                        start += 5
+                        pass
+                    elif (p.data[start] == 4):
+                        print 'double:', unpack('f', packBits(p.data[start+1:start+5]))
+                        start += 5
+                    elif (p.data[start] == 5):
+                        print 'coordinate', unpack('f', packBits(p.data[start+1:start+5])),',', unpack('f', packBits(p.data[start+5:start+9]))
+                        start += 9
+                    elif (p.data[start] == 0):
+                        break
+            else :
+                print "%(d)5d"% {'d':i},p.type,p.source,p.group,p.destination, p.data
         else:
             pass
         cmd = input_loop()
-        if cmd:
+        if cmd != None:
             run_command(cmd.strip())
         p = am.read()
 

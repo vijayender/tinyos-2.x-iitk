@@ -27,10 +27,12 @@ module ndC{
     interface PacketField<uint8_t> as PacketRSSI;
 
     interface iterative_majorize as im;
+    interface debug_v as debugger;
   }
 }
 
 implementation {
+  gsl_matrix *p,*d;
   bool busy = FALSE;
   neighbour_data_t* temp_n;
   message_t packet;
@@ -40,6 +42,8 @@ implementation {
   uint8_t iters = 0;  
   void send_cmd (uint16_t addr, uint8_t cmd);
   void sig_error (void);
+  bool im_running = FALSE, results = FALSE;
+  int i,j,k;
 
   task void test_im(void);
   task void im_iterate ();
@@ -109,11 +113,22 @@ implementation {
 	printfflush();
        	post test_im();
 	break;
+      case TEST_DEBUG:
+	call debugger.send_uint8_t (1);
+	call debugger.send_uint32_t (-1);
+	call debugger.send_double (0.1);
+	call debugger.send_coordinate_f (1.23,0.001);
+	call debugger.debug_flush ();
       default:
 	sig_error ();
       }
     }
     return bufPtr;
+  }
+
+  task void synchData ()
+  {
+
   }
 
   void sig_error (void)
@@ -221,9 +236,7 @@ implementation {
 
   task void test_im(void)
   {
-    gsl_matrix *p,*d;
     float val[][2] = {{1,2},{3,4},{5,6}}, psum, diff;
-    int i,j,k;
 
     printf("working %d %d\n", sizeof(float), sizeof(double));
     printfflush();
@@ -254,6 +267,7 @@ implementation {
     
     call im.initialize();
     call Leds.led1Toggle();
+    im_running = TRUE;
     post im_iterate();
   }
 
@@ -264,10 +278,30 @@ implementation {
     call im.iterate ();
     a = call im.test();
     call Leds.led0Toggle();
-    printf("iters: %d %1.3f\n",iters, (double)a);
-    printfflush();
-    if (a > 0.001)
-      post im_iterate();
+    //    printf("iters: %d\n",iters);
+    call debugger.send_uint8_t(iters);
+    call debugger.send_double((double)a);
+    call debugger.debug_flush();
+  }
+
+  event void debugger.flushDone ()
+  {
+    float a;
+    if (im_running) {
+      a = call im.test();
+      if (a > 0.001) {
+	post im_iterate();
+	i = 0;
+      } else {
+	if (i < p->size1) {
+	  call debugger.send_coordinate_f (gsl_matrix_get(p,i,0), gsl_matrix_get(p,i,1));
+	  call debugger.debug_flush ();
+	  i++;
+	} else {
+	  call im.free();
+	}
+      }
+    }
   }
 
   /* send_element (gsl_matrix *d) { */

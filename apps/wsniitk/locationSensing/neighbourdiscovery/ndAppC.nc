@@ -3,9 +3,7 @@
 #ifdef TOSSIM
 #define RF230ActiveMessageC ActiveMessageC
 #endif
-configuration ndAppC
-{
-}
+configuration ndAppC {}
 implementation
 {
   components MainC, ndC as App, LedsC, RandomC;
@@ -48,4 +46,17 @@ implementation
 
   components iterative_majorizeC as im;
   App.im -> im;
+ 
+  components new AMReceiverC (AM_DBG_MSG) as debug_receiver;
+  components new AMSenderC (AM_DBG_MSG) as debug_sender;
+  components new TimerMilliC() as timer2;
+  components debugC as debugger;
+  debugger.timer -> timer2;
+  App.debugger -> debugger;
+  debugger.Packet -> ActiveMessageC;
+  debugger.sender -> debug_sender;
+  debugger.receiver -> debug_receiver;
+  debugger.Leds -> LedsC;
+  MainC.SoftwareInit -> debugger;
+  
 }
