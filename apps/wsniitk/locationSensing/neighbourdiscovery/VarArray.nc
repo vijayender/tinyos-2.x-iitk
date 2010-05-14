@@ -8,7 +8,7 @@ interface VarArray<t> {
 
   /* Default position is set to first element */
   command error_t set_pos (uint8_t pos);
-  
+  command uint8_t get_pos ();
   /* returns null if last item */
   command t* next_item ();
 }

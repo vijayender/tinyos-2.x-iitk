@@ -35,6 +35,20 @@ enum {
   GET_PDB_DONE,
   TEST_IM,
   TEST_DEBUG,
+  TEST_SYNDICATE,
+  TEST_IM2,
 };
+
+
+#define _SEND_ALLOC(p, t)			\
+  t* p;
+#define _SEND_INI(p, t, packet)				\
+  p = (t*) call Packet.getPayload (packet, sizeof (t));	\
+  if (p  != NULL){
+
+#define _SEND_SEND(carrier, addr, packet, t)				\
+  call carrier.send (addr, packet, sizeof (t));				\
+  }
+
 
 #endif

@@ -24,7 +24,7 @@ implementation {
 
   command uint8_t VarArray.size () {
     dbg ("VarArrayP", "%s size is %i\n", __FUNCTION__, (int)free);
-    return free;
+    return index;
   }
     
   command uint8_t VarArray.maxSize () {
@@ -51,6 +51,10 @@ implementation {
     }
   }
 
+  command uint8_t VarArray.get_pos (){
+    return iterator;
+  }
+  
   command varArray_t * VarArray.next_item () {
     if (iterator < index){
       varArray_t* rval = &varArray[iterator];

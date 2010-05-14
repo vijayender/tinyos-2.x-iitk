@@ -31,7 +31,9 @@ implementation
   App.controller_send -> controller_send;
 
   components new AMSenderC (AM_NDATA_MSG) as neighbour_data_send;
+  components new AMReceiverC (AM_NDATA_MSG) as neighbour_data_receive;
   App.neighbour_data_send -> neighbour_data_send;
+  App.neighbour_data_receive -> neighbour_data_receive;
 
   //  components new AMSenderC (AM_COORD_MSG) as coordinate_send;
   //  App.coordinate_send -> coordinate_send;
@@ -46,7 +48,11 @@ implementation
 
   components iterative_majorizeC as im;
   App.im -> im;
- 
+
+  components new StateC() as syndicateState;
+  App.syndicateState -> syndicateState;
+  
+  /* DEBUG */
   components new AMReceiverC (AM_DBG_MSG) as debug_receiver;
   components new AMSenderC (AM_DBG_MSG) as debug_sender;
   components new TimerMilliC() as timer2;
@@ -58,5 +64,4 @@ implementation
   debugger.receiver -> debug_receiver;
   debugger.Leds -> LedsC;
   MainC.SoftwareInit -> debugger;
-  
 }

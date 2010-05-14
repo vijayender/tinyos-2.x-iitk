@@ -95,11 +95,15 @@ def run_command (cmd):
     elif (cmd =="get"):
         print "get neighbours .."
         send_command(3)
-    elif (cmd == "test_im"):
+    elif (cmd == "im"):
         print "test_im .."
         send_command(5)
-    elif (cmd == "test_dbg"):
+    elif (cmd == "dbg"):
         send_command (6)
+    elif (cmd == "syn"):
+        send_command (7)
+    elif (cmd == "im2"):
+        send_command (8)
     elif (cmd == None):
         pass
     elif (cmd == "q") | (cmd == ""):
