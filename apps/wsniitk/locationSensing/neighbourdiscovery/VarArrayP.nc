@@ -43,7 +43,7 @@ implementation {
   }
 
   command error_t VarArray.set_pos (uint8_t pos){
-    if (pos < size){
+    if (pos <= index){
       iterator = pos;
       return SUCCESS;
     }else{

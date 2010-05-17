@@ -45,7 +45,7 @@ implementation {
   void send_cmd (uint16_t addr, uint8_t cmd);
   void sig_error (void);
   void im_initialize();
-  uint8_t computeDistance(uint8_t);
+  double computeDistance(uint8_t);
   uint8_t indexOf(uint8_t nodeid);
   bool im_running = FALSE, results = FALSE;
   int i,j,k;
@@ -93,8 +93,6 @@ implementation {
       command_msg_t* rcm = (command_msg_t*) payload;
       switch (rcm->cmd) {
       case HELLO:
-	printf("working\n");
-	printfflush();
 	send_cmd (call AMPacket.source (bufPtr), HELLO);
 	break;
       case START_DISCOVERY:
@@ -114,8 +112,6 @@ implementation {
 	}
 	break;
       case TEST_IM:
-	printf("working\n");
-	printfflush();
        	post test_im();
 	break;
       case TEST_DEBUG:
@@ -129,8 +125,6 @@ implementation {
 	post test_syndicate();
 	break;
       case TEST_IM2:
-	printf("working\n");
-	printfflush();
        	post test_im2();
 	break;
       default:
@@ -142,11 +136,11 @@ implementation {
   
   task void test_syndicate()
   {
-    static int curr_pos=0;
+    static int curr_pos=1;
     switch (call syndicateState.getState()) {
     case S_IDLE:
       call syndicateState.forceState(S_COLLECT);
-      curr_pos = 0;
+      curr_pos = 1;		/* Choosing 1 because 0 is self */
       im_initialize();
     case S_COLLECT:
       //foreach node in neighbour list issue GET_PDB
@@ -156,21 +150,24 @@ implementation {
       if (temp_n) {
 	send_cmd(temp_n->node_id, GET_PDB);
       } else {
+	curr_pos = 0;
 	call syndicateState.forceState(S_DISPATCH);
 	post test_syndicate();
       }
-      i = 0;
+      break;
     case S_DISPATCH:
-      for (j = 0; j < i; j++){
-	call debugger.send_uint8_t(gsl_matrix_get(d, i, j));
+      for (j = 0; j < curr_pos; j++){
+	call debugger.send_double(gsl_matrix_get(d, curr_pos, j));
       }
-      call debugger.send_uint8_t(255);
+      call debugger.send_uint8_t(curr_pos);
       call debugger.debug_flush();
-      if (++i < d->size1)
+      if (++curr_pos == d->size1)
 	call syndicateState.forceState(S_DONE);
+      break;
     case S_DONE:
       call Leds.led0On();
     default:
+      call Leds.led1On();
       sig_error();
     }
   }
@@ -184,14 +181,16 @@ implementation {
   event message_t* neighbour_data_receive.receive(message_t* bufPtr, void* payload, uint8_t len)
   {
     neighbour_data_t* rcm;        
+    uint8_t pos1, pos2;
     if (len != sizeof (neighbour_data_t)){
       return bufPtr;
     } else {
+      rcm = (neighbour_data_t*) payload;
       //Make an entry in neighbours
-      uint8_t pos1 = indexOf(call AMPacket.source(bufPtr));
-      uint8_t pos2 = indexOf(rcm->node_id);
+      pos1 = indexOf(call AMPacket.source(bufPtr));
+      pos2 = indexOf(rcm->node_id);
       if ((pos2 != -1) && (pos1 != -1)) {
-	if (pos1 < pos2)	/* Fill only lower triangle */
+	if (pos2 < pos1)	/* Fill only lower triangle */
 	  gsl_matrix_set(d, pos1, pos2, computeDistance(rcm->p_db));
 	else
 	  gsl_matrix_set(d, pos2, pos1, computeDistance(rcm->p_db));
@@ -204,8 +203,8 @@ implementation {
   {
     call neighbours.set_pos(0);
     while ((temp_n = call neighbours.next_item())) {
-      if ((temp_n->node_id = nodeid))
-	return call neighbours.get_pos();
+      if ((temp_n->node_id == nodeid))
+	return call neighbours.get_pos() - 1;
     }
     return -1;
   }
@@ -221,6 +220,9 @@ implementation {
     call neighbours.reset ();
     neighbour_discovery_state = noleader;
     wait = call Random.rand16 () & 0x00ff;	/* Maximum of 16ms */
+    temp_n = call neighbours.get ();
+    temp_n->node_id = TOS_NODE_ID; /* Registering self */
+    temp_n->p_db = -1;		   /* With max possible pdb */
 
     call backoff.startOneShot (wait);
   }
@@ -315,9 +317,6 @@ implementation {
   {
     float val[][2] = {{1,2},{3,4},{5,6}}, psum, diff;
 
-    printf("working %d %d\n", sizeof(float), sizeof(double));
-    printfflush();
-    
     call im.alloc(3,2);
     p = call im.get_p();
     d = call im.get_d();
@@ -375,15 +374,17 @@ implementation {
     call debugger.debug_flush();
   }
 
-  uint8_t computeDistance (uint8_t dis)
+  double computeDistance (uint8_t dis)
   {
-    return dis;
+    return (double)dis;
   }
   
   event void debugger.flushDone ()
   {
     float a;
-    if (im_running) {
+    if (call syndicateState.getState() == S_DISPATCH) {
+      post test_syndicate();
+    } else if (im_running) {
       a = call im.test();
       if (a > 0.001) {
 	post im_iterate();
