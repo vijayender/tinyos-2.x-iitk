@@ -61,8 +61,8 @@ if __name__ == "__main__":
     distances = np.zeros((len(locs), len(locs)))
     for i in xrange(0, len(locs)):
         for j in xrange(0,i):
-            #distances[i,j] = -distance(locs[i], locs[j]) -40
-            distances[i,j] = w.pdb_from_d(distance(locs[i], locs[j]))
+            distances[i,j] = -distance(locs[i], locs[j]) -40
+            #distances[i,j] = w.pdb_from_d(distance(locs[i], locs[j]))
     #Change ndC, add dbg channel, to see output.
     #Write a function to inject packets.
     lines = f.readlines()

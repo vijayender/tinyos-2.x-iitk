@@ -327,8 +327,8 @@ implementation {
 #ifndef TOSSIM      
       temp_n->p_db = call PacketRSSI.get (bufPtr);
 #else
-      temp_n->p_db = 84 + (84 * (int8_t)(call PacketRSSI.strength(bufPtr))) / 91;
-      //temp_n->p_db = -40 - (int8_t)(call PacketRSSI.strength(bufPtr));
+      //temp_n->p_db = 84 + (84 * (int8_t)(call PacketRSSI.strength(bufPtr))) / 91;
+      temp_n->p_db = -40 - (int8_t)(call PacketRSSI.strength(bufPtr));
 #endif
       dbg("ndC", "%d %d %hhi\n", rcm->leader, temp_n->node_id, temp_n->p_db);
       if (neighbour_discovery_state == found_leader){
@@ -448,7 +448,7 @@ implementation {
   {
     /* dbg("ndC","ComputeDistance %d %f\n", dis, (EXPRS(dis))); */
     uint8_t ind;
-    //return dis;
+    return dis;
     ind = 40 - dis;
     if ( ind < 0 )
       return 0.1;
