@@ -39,15 +39,16 @@ if __name__ == "__main__":
     # pylab.plot(x,y_pdb,'r-')
 
     x_re2 = [ j-i for (i,j) in zip(x,x_re)]
-    # pylab.plot(x,y_ed,'b-',label="Experimental ed")
-    # pylab.plot(x,y_m_mdl,'g-',label="log model")
-    # pylab.plot(x,y_mdl2,'r-',label="5th degree linear approximation")
-    # pylab.plot(y_new,x_new,'r*',label='points of distances table')
-    # pylab.plot(x,x_re2,'k-',label="Error Plot after reconstruction")
-    # pylab.plot(x,x_re,'r-',label="Recorrected distances")
-    # pylab.plot(x,x,'r-',label="Ideal reconstruction")
+    pylab.plot(x,y_ed,'b-',label="Experimental ed")
+    #pylab.plot(x,y_m_mdl,'g-',label="log model")
+    pylab.plot(x,y_mdl2,'r-',label="5th degree linear approximation")
+    pylab.plot(y_new,x_new,'r*',label='points of distances table')
+    pylab.plot(x,x_re2,'k-',label="Error Plot after reconstruction")
+    pylab.plot(x,x_re,'r-',label="Recorrected distances")
+    pylab.plot(x,x,'r-',label="Ideal reconstruction")
     # pylab.legend()
-    # pylab.show()
+    pylab.axis([0,50,-10,50])
+    pylab.show()
 
     
     # x_new is ed

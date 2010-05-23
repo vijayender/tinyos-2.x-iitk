@@ -56,7 +56,7 @@ implementation
 
   command float im.loss ()
   {
-    return s->loss;///s->lt;
+    return s->loss/s->lt;
   }
 
   command void im.print_details()

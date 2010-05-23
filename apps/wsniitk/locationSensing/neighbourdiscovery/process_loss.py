@@ -44,9 +44,17 @@ if __name__ == "__main__":
     # oup = read_from_file ('simul_work/output/'+f2,0, n, ', ')
     di = d2_from_p(matrix(inp))
     do = d2_from_p(matrix(oup))
-    print di
-    print do
-    print sqrt(di)-sqrt(do)
+    print sqrt(di)
+    print sqrt(do)
+    print (sqrt(di)-sqrt(do))
 
     print lt(di), lt(do), lt(di-do)
-    print lt(di-do)/lt(di)
+    print "Actual loss", lt(sqrt(di)-sqrt(do))/lt(sqrt(di))
+
+    if len(sys.argv) == 5:
+        f3 = sys.argv[4]
+        dp = matrix(read_from_file(f3, n+4, n+4+n, ','))
+        print dp
+        print "Loss", lt(sqrt(do)-dp)/lt(dp)
+        lo = sqrt(do) - dp
+        print multiply(lo,lo)

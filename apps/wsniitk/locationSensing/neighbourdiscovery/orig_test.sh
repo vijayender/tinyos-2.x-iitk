@@ -33,10 +33,10 @@ do
     echo 0
 done >> simul_work/inpFil
 :>simul_work/oup
-~/wsn/mds/code/mycode/build/test_library $3 -i simul_work/inpFil -c simul_work/inpConf -o simul_work/oup -l iterative_majorize
+~/wsn/mds/code/mycode/build/test_library $3 -i simul_work/inpFil -c simul_work/inpConf.basic_sa -o simul_work/oup -l basic_sa
 echo "------Input------"
 cat $ifil
 echo "------Output------"
 #cat simul_work/oup
 head -n $((l+3)) simul_work/oup | tail -n $l | tee simul_work/oup_t
-python process_loss.py $ifil simul_work/oup_t $l
+python process_loss.py $ifil simul_work/oup_t $l simul_work/inpFil
