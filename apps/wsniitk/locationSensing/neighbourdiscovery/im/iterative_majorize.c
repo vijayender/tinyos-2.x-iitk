@@ -44,6 +44,7 @@ void iterative_majorizer_initialize (iterative_majorizer_t *s, gsl_matrix *x, gs
   s->BZ = gsl_matrix_alloc(d->size1, d->size2);
   s->DZ = gsl_matrix_alloc(d->size1, d->size2);
   s->loss = loss_function_simple(s->x, s->d, -1);
+  s->lt = sum_distance_matrix_sqr(d);
 }
 void iterative_majorizer_free (iterative_majorizer_t *s)
 {
@@ -70,12 +71,13 @@ void iterative_majorizer_iterate (iterative_majorizer_t *s)
   // Compute B(X) using d1/dz
   for (i = 0; i < s->d->size1; i++){
     for (j = 0,psum = 0; j < s->d->size2; j++){
-      if (i == j || gsl_matrix_get(s->DZ, i, j) < s->epsilon)
+      if (i == j)// || 
 	gsl_matrix_set(s->BZ, i, j, 0);
-      else if(i < j)
+      else if(i < j){
 	gsl_matrix_set(s->BZ, i, j, -gsl_matrix_get(s->d, j, i)/gsl_matrix_get(s->DZ, j, i)/s->d->size1); /* Symmetry */
-      else
+      } else {
 	gsl_matrix_set(s->BZ, i, j, -gsl_matrix_get(s->d, i, j)/gsl_matrix_get(s->DZ, i, j)/s->d->size1);
+      }
       psum += gsl_matrix_get(s->BZ,i,j);
     }
     gsl_matrix_set(s->BZ, i, i, -psum);

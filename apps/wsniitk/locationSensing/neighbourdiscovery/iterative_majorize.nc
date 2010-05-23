@@ -7,6 +7,7 @@ interface iterative_majorize {
   command gsl_matrix* get_p ();
   command void iterate ();
   command float test ();
+  command float loss ();
   command void print_details ();
   command void free ();
 }

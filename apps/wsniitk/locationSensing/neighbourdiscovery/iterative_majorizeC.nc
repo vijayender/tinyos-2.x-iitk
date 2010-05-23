@@ -26,7 +26,9 @@ implementation
   }
   command void im.initialize()
   {
-      iterative_majorizer_initialize(s, p, d);
+    print_matrix_2d(p,"P");
+    print_matrix_2d(d,"D");
+    iterative_majorizer_initialize(s, p, d);
   }
   command void im.free()
   {
@@ -42,14 +44,19 @@ implementation
   }
   command void im.iterate ()
   {
-    printfflush();
     iterative_majorizer_iterate(s);
-    //printf("loss %1.3f, loss_temp %1.3f\n", (double)s->loss, (double)s->loss_temp);
-    printfflush();
+#ifdef TOSSIM
+    dbg("ndC"," loss %g, loss_temp %g, lt %g \n", s->loss, s->loss_temp, s->lt);
+#endif
   }
   command float im.test ()
   {
     return s->loss_temp - s->loss;
+  }
+
+  command float im.loss ()
+  {
+    return s->loss;///s->lt;
   }
 
   command void im.print_details()

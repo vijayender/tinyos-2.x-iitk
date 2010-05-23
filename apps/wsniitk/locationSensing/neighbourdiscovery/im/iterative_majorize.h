@@ -13,6 +13,7 @@ typedef struct iterative_majorizer_t {
   float loss;
   float loss_temp;
   float epsilon;
+  float lt;
 } iterative_majorizer_t; // All these values should be allocated upon initialization
 
 iterative_majorizer_t * iterative_majorizer_alloc ();

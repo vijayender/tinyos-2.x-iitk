@@ -77,6 +77,10 @@ implementation
  
   command error_t debug_v.debug_flush()
   {
+#ifdef TOSSIM
+    call timer.startOneShot (100);
+    return SUCCESS;
+#else
     /* Send all messages stored till now */
     if (inUse == 0){
       inUse = 1;
@@ -87,35 +91,56 @@ implementation
     }
     call Init.init();
     return SUCCESS;
+#endif
   }
 
   command void debug_v.send_uint8_t(uint8_t i)
   {
+#ifdef TOSSIM
+    dbg("debug_v","%d\n",i);
+#else
     //push_uint8_t (inUse);
     push_uint8_t (val_uint8_t);
     push_uint8_t (i);
     /* printf("%d:",i); */
     /* printfflush(); */
+#endif
   }
   command void debug_v.send_uint16_t(uint16_t i)
   {
+#ifdef TOSSIM
+    dbg("debug_v","%d\n",i);
+#else
     push_uint8_t (val_uint16_t);
     push_uint16_t (i);
+#endif
   }
   command void debug_v.send_uint32_t(uint32_t i)
   {
+#ifdef TOSSIM
+    dbg("debug_v","%d\n",i);
+#else
     push_uint8_t (val_uint32_t);
     push_uint32_t (i);
+#endif
   }
   command void debug_v.send_double(double i)
   {
+#ifdef TOSSIM
+    dbg("debug_v","%f\n",i);
+#else
     push_uint8_t (val_double);
     push_double (i);
+#endif
   }
   command void debug_v.send_coordinate_f(double x, double y)
   {
+#ifdef TOSSIM
+    dbg("debug_v","%f, %f\n",x,y);
+#else
     push_uint8_t (val_coordinate);
     push_coordinate_f (x, y);
+#endif
   }
   
   event void sender.sendDone (message_t* bufPtr, error_t error)

@@ -1,8 +1,12 @@
 #include "nd.h"
 #include "im/gsl_matrix.h"
+
 #ifdef TOSSIM
-#define RF230ActiveMessageC ActiveMessageC
+void printfflush();
+
+void printfflush(){}
 #endif
+
 configuration ndAppC {}
 implementation
 {
@@ -14,11 +18,14 @@ implementation
   components ActiveMessageC;
 #ifndef TOSSIM
   components RF230ActiveMessageC;
+  App.PacketRSSI -> RF230ActiveMessageC.PacketRSSI;
+#else
+  components TossimActiveMessageC;
+  App.PacketRSSI -> TossimActiveMessageC.TossimPacket;
 #endif
   App.AMControl -> ActiveMessageC;
   App.Packet -> ActiveMessageC;
   App.AMPacket -> ActiveMessageC;
-  App.PacketRSSI -> RF230ActiveMessageC.PacketRSSI;
 
   components new AMSenderC (AM_ND_MSG) as neighbour_discover_send;
   components new AMReceiverC (AM_ND_MSG) as neighbour_discover_receive;

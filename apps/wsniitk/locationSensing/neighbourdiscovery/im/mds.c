@@ -67,17 +67,17 @@ float loss_function_simple_unsquared_d(gsl_matrix *p, gsl_matrix *d, float lim)
 void print_matrix_2d (gsl_matrix *p, char* str)
 {
   int i,j;
-  printf("printing matrix %s \n - - - - - - - - - - - - - - - - - - - - \n", str);
-  printfflush();
+  dbg("ndC","printing matrix %s \n - - - - - - - - - - - - - - - - - - - - \n", str);
+  /* printfflush(); */
   for (i = 0; i < p->size1; i++){
     for (j = 0; j < p->size2; j++){
-      printf(" %f ",(double)gsl_matrix_get(p,i,j));
+      dbg("ndC"," %f ",(double)gsl_matrix_get(p,i,j));
     }
-    printf("\n");
-    printfflush();
+    dbg("ndC","\n");
+    /* printfflush(); */
   }
-  printf("\n - - - - - - - - - - - - - - - - - - - - \n");
-  printfflush();
+  dbg("ndC","\n - - - - - - - - - - - - - - - - - - - - \n");
+  /* printfflush(); */
 }
 
 void compute_distance_matrix_lt (gsl_matrix *d, gsl_matrix *p)

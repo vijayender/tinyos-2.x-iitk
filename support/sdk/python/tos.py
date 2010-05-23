@@ -647,6 +647,8 @@ class Packet:
                 boffset += s
                 if boffset == 8:
                     boffset = 0
+            elif t == 'float':
+                pass #write code for.. TODO
             elif self._values[i] != []:
                 r += self._values[i]
         for i in self._values[len(self._schema):]:
