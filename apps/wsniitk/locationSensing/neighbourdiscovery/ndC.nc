@@ -9,6 +9,7 @@ module ndC{
     interface Boot;
     interface AMPacket;
     interface State as syndicateState;
+    interface State as nd_state; /* Neighbour discovery state */
 
     interface Timer<TMilli> as backoff;
     interface Timer<TMilli> as discover_complete;
@@ -76,6 +77,15 @@ implementation {
     S_DISPATCH,
     S_DONE
   };
+
+  enum {			/* nd_state */
+    N_IDLE,
+    N_NOLEADER,
+    N_LEVEL_1,
+    N_LEVEL_1_SENT,
+    N_LEVEL_2,
+    N_DONE,
+  };
   
   enum {noleader, found_leader, finished} neighbour_discovery_state = noleader;
 
@@ -113,6 +123,7 @@ implementation {
 	break;
       case START_DISCOVERY:
 	dbg("ndC", "start_discovery\n");
+	nd_state.forceState(N_IDLE);
 	post start_discover ();
 	break;
       case DISCOVERY_DONE:
@@ -268,34 +279,39 @@ implementation {
   /* DISCOVERY STUFF */
   task void start_discover ()
   {
-    call neighbours.reset ();
-    neighbour_discovery_state = noleader;
-    wait = call Random.rand16 () & 0x00ff;	/* Maximum of 16ms */
-    temp_n = call neighbours.get ();
-    temp_n->node_id = TOS_NODE_ID; /* Registering self */
-    temp_n->p_db = -1;		   /* With max possible pdb */
-
-    call backoff.startOneShot (wait);
+    switch (call nd_state.getState()) {
+    case N_IDLE:
+      call nd_state.forceState(N_NOLEADER);
+      call neighbours.reset ();
+      wait = call Random.rand16 () & 0x00ff;	/* Maximum of 16ms */
+      temp_n = call neighbours.get ();
+      temp_n->node_id = TOS_NODE_ID; /* Registering self */
+      temp_n->p_db = -1;		   /* With max possible pdb */
+      call backoff.startOneShot (wait);
+      break;
+    case N_LEVEL_1:
+      
+    }
   }
   
   event void backoff.fired ()
   {
-    _SEND_ALLOC(rcm, neighbour_discover_msg_t)
-    if (neighbour_discovery_state == noleader){
+    _SEND_ALLOC(rcm, neighbour_discover_msg_t);
+    if (call nd_state.getState() == N_NOLEADER){
       //Set leader to self.
       call Leds.led2On();
       group_leader = TOS_NODE_ID;
-      neighbour_discovery_state = found_leader;
+      call nd_state.forceState(N_LEVEL_1);
     }
-    _SEND_INI(rcm, neighbour_discover_msg_t, &packet)
+    _SEND_INI(rcm, neighbour_discover_msg_t, &packet);
     rcm->leader = group_leader;
     dbg("ndC","send  %d\n", group_leader);
-    _SEND_SEND(neighbour_discover_send, AM_BROADCAST_ADDR, &packet, neighbour_discover_msg_t)
+    _SEND_SEND(neighbour_discover_send, AM_BROADCAST_ADDR, &packet, neighbour_discover_msg_t);
+    call nd_state.forceState(N_LEVEL_1_SENT);
   }
 
   event void neighbour_discover_send.sendDone (message_t* bufPtr, error_t error)
   {
-    neighbour_discovery_state = finished;
     call Leds.led0Toggle ();
     call discover_complete.startOneShot (TIMEOUT);
   }
@@ -303,6 +319,7 @@ implementation {
   event void discover_complete.fired ()
   {
     dbg("ndC","Discovery complete\n");
+    call nd_state.forceState(N_LEVEL_2);
     if (TOS_NODE_ID == group_leader)
       send_cmd (AM_BROADCAST_ADDR, DISCOVERY_DONE);
   }
@@ -314,30 +331,41 @@ implementation {
     if (len != sizeof (neighbour_discover_msg_t)){
       return bufPtr;
     } else {
-      call backoff.stop ();
-      call discover_complete.stop ();
       rcm = (neighbour_discover_msg_t*) payload;
-      if (neighbour_discovery_state == noleader){
-	neighbour_discovery_state = found_leader;
-	group_leader = rcm->leader;
+      call backoff.stop ();
+      if (call discover_complete.isRunning()) {
+	call discover_complete.stop();
+	call discover_complete.startOneShot(TIMEOUT);
       }
-      /* REGISTER THE INCOMING NODE (will require a variable size array) */
-      temp_n = call neighbours.get ();
-      temp_n->node_id = call AMPacket.source (bufPtr);
-#ifndef TOSSIM      
-      temp_n->p_db = call PacketRSSI.get (bufPtr);
-#else
-      //temp_n->p_db = 84 + (84 * (int8_t)(call PacketRSSI.strength(bufPtr))) / 91;
-      temp_n->p_db = -40 - (int8_t)(call PacketRSSI.strength(bufPtr));
-#endif
-      dbg("ndC", "%d %d %hhi\n", rcm->leader, temp_n->node_id, temp_n->p_db);
-      if (neighbour_discovery_state == found_leader){
+      switch(call nd_state.getState()){
+      case N_NOLEADER:
+	nd_state.forceState(N_LEVEL_1);
+	group_leader = rcm->leader;
+      case N_LEVEL_1:
 	wait = call Random.rand16 () & 0x00ff;	/* Maximum of 16ms */
-	call backoff.startOneShot (wait);
+	backoff.startOneShot(wait);
+      case N_LEVEL_1_SENT:
+	/* REGISTER THE INCOMING NODE (will require a variable size array) */
+	temp_n = call neighbours.get ();
+	temp_n->node_id = call AMPacket.source (bufPtr);
+#ifndef TOSSIM      
+	temp_n->p_db = call PacketRSSI.get (bufPtr);
+#else
+	//temp_n->p_db = 84 + (84 * (int8_t)(call PacketRSSI.strength(bufPtr))) / 91;
+	temp_n->p_db = -40 - (int8_t)(call PacketRSSI.strength(bufPtr));
+#endif
+	dbg("ndC", "%d %d %hhi\n", rcm->leader, temp_n->node_id, temp_n->p_db);
+	wait = call Random.rand16 () & 0x00ff;	/* Maximum of 16ms */
+	break;
+      case N_LEVEL_2:
+      case N_DONE:
+	break;
+      default:
+	sig_error();
       }
       if (neighbour_discovery_state == finished)
-	call discover_complete.startOneShot (TIMEOUT);
-    }
+	  call discover_complete.startOneShot (TIMEOUT);
+    }      
     return bufPtr;
   }
 

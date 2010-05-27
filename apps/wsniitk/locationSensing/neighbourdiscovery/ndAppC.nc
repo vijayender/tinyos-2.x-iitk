@@ -58,6 +58,9 @@ implementation
 
   components new StateC() as syndicateState;
   App.syndicateState -> syndicateState;
+  components new StateC() as nd_state;
+  App.nd_state -> nd_state;
+  
   
   /* DEBUG */
   components new AMReceiverC (AM_DBG_MSG) as debug_receiver;
