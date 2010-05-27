@@ -26,8 +26,8 @@ implementation
   }
   command void im.initialize()
   {
-    print_matrix_2d(p,"P");
-    print_matrix_2d(d,"D");
+    //    print_matrix_2d(p,"P");
+    //    print_matrix_2d(d,"D");
     iterative_majorizer_initialize(s, p, d);
   }
   command void im.free()

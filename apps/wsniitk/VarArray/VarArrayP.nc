@@ -30,7 +30,8 @@ implementation {
   }
 
   command uint8_t VarArray.size () {
-    return index;
+    dbg("ndC","Lol %d\n", size * stride_index + index);
+    return size * stride_index + index;
   }
     
   command varArray_t* VarArray.get () {
