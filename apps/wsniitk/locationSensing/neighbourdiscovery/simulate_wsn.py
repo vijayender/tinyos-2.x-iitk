@@ -97,10 +97,10 @@ if __name__ == "__main__":
 
     print "time is now", t.time(), "Going to get the messages from the leader"
     send_command(t, 3, 0)
-    simulate(5000)
+    simulate(10000)
 
     send_command(t, 7, 0)
-    simulate(2000)
+    simulate(10000)
     print 
     # sim_loop()
     #exit(0)
