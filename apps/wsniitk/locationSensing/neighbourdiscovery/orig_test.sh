@@ -33,7 +33,7 @@ do
     echo 0
 done >> simul_work/inpFil
 :>simul_work/oup
-~/wsn/mds/code/mycode/build/test_library $3 -i simul_work/inpFil -c simul_work/inpConf.basic_sa -o simul_work/oup -l basic_sa
+~/wsn/mds/code/mycode/build/test_library $3 -i simul_work/inpFil -c simul_work/inpConf -o simul_work/oup -l iterative_majorize
 echo "------Input------"
 cat $ifil
 echo "------Output------"

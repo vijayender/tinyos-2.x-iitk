@@ -1,7 +1,6 @@
 interface VarArray<t> {
   command bool empty ();
   command uint8_t size ();
-  command uint8_t maxSize ();
   command void reset ();
   //  command error_t put (t* val);
   command t* get ();
