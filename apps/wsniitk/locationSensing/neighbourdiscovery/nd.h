@@ -8,12 +8,16 @@ typedef nx_struct command_msg {
 } command_msg_t;
 
 typedef nx_struct neighbour_discover_msg {
-  nx_uint16_t leader;
+  //nx_uint16_t leader;
+  nx_int16_t x;
+  nx_int16_t y;
+  nx_uint8_t updated;
 } neighbour_discover_msg_t;
 
 typedef nx_struct neighbour_data {
   nx_uint16_t node_id;
-  nx_uint8_t p_db;
+  nx_uint8_t estimated_distance;
+  nx_uint8_t computed_distance;
 } neighbour_data_t;
 
 #define MAXRETRIES 50

@@ -1,8 +1,20 @@
-from TOSSIM import *
-import sys
+# from TOSSIM import *
+# import sys
 
-t = Tossim([])
+
+from sys import *
+from random import *
+from TOSSIM import *
+from tinyos.tossim.TossimApp import *
+
+n = NescApp()
+t = Tossim(n.variables.variables())
 r = t.radio()
+
+
+
+#t = Tossim([])
+#r = t.radio()
 f = open("meyer-simple.txt", "r")
 m = t.getNode(32)
 m.bootAtTime(100)
@@ -25,10 +37,14 @@ for line in lines:
 for i in [32,30]:
   t.getNode(i).createNoiseModel()
 
+v = t.getNode(32).getVariable("RadioCountToLedsC.counter")
+
 for i in xrange(0,1000):
     t.runNextEvent()
+    print v.getData()
 
 print r.add (32,30, -20)
 
 for i in xrange(0,1000):
     t.runNextEvent()
+    print v.getData()

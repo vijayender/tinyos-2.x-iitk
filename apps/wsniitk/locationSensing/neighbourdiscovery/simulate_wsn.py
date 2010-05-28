@@ -6,6 +6,7 @@ import numpy.linalg.linalg as l
 from ndPacket import *
 from TOSSIM import *
 import sys
+from tinyos.tossim.TossimApp import *
 
 def sim_loop():
     l = sys.stdin.readline()
@@ -38,8 +39,9 @@ def simulate(x):
 
     
 if __name__ == "__main__":
-    
-    t = Tossim([])
+    n = NescApp()
+    t = Tossim(n.variables.variables())
+    #t = Tossim([])
     r = t.radio()
     f = open("meyer-simple.txt", "r")
 
@@ -93,25 +95,39 @@ if __name__ == "__main__":
     print "time is now", t.time()
     for i in xrange(0,len(locs)):
         send_command(t, 1, i)
-    simulate(10000)
 
-    print "time is now", t.time(), "Going to get the messages from the leader"
-    send_command(t, 3, 0)
-    simulate(10000)
+    v = [t.getNode(i).getVariable("ndC.finished_discovery") for i in xrange(0,len(locs))]
+    def notDone():
+        for k in v:
+            if (k.getData() != 1):
+                return True
+        return False
 
-    send_command(t, 7, 0)
-    simulate(10000)
-    print 
-    # sim_loop()
-    #exit(0)
+    ll = 0
+    while (notDone()):
+        ll += 1
+        simulate(1000)
+        sys.stderr.write("ll: %d \n" % ll)
+    
 
-    # r = np.zeros((5,5))
-    # devs=[0,1,2,3,4];
-    # for i in xrange(0,5):
-    #     for j in xrange(0,5):
-    #         r[i,j] = distance(locs[devs[i]], locs[devs[j]])
-    #         distances[i,j] = w.ed_from_d(r[i,j])
-    # print distances,'\n', r
-    send_command(t, 8, 0)
-    simulate(20000)
+
+#     print "time is now", t.time(), "Going to get the messages from the leader"
+#     send_command(t, 3, 0)
+#     simulate(10000)
+
+# #    send_command(t, 7, 0)
+# #    simulate(10000)
+#     print 
+#     # sim_loop()
+#     #exit(0)
+
+#     # r = np.zeros((5,5))
+#     # devs=[0,1,2,3,4];
+#     # for i in xrange(0,5):
+#     #     for j in xrange(0,5):
+#     #         r[i,j] = distance(locs[devs[i]], locs[devs[j]])
+#     #         distances[i,j] = w.ed_from_d(r[i,j])
+#     # print distances,'\n', r
+# #    send_command(t, 8, 0)
+# #    simulate(20000)
 
