@@ -38,5 +38,6 @@ echo "------Input------"
 cat $ifil
 echo "------Output------"
 #cat simul_work/oup
-head -n $((l+3)) simul_work/oup | tail -n $l | tee simul_work/oup_t
+head -n $((l+3)) simul_work/oup | tail -n $l | sed -e 's/,/, /g' | tee simul_work/oup_t
 python process_loss.py $ifil simul_work/oup_t $l simul_work/inpFil
+echo p "'simul_work/oup_t' using 1:2 with lines, 'simul_work/oup_t' using 1:2 with points, '$ifil' with lines, '$ifil' with points" | gnuplot -persist
