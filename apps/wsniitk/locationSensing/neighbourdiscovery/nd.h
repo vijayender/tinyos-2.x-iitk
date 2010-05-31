@@ -2,7 +2,6 @@
 #define ND_H
 #define RF230_RSSI_ENERGY
 #define TIMEOUT 1000
-
 typedef nx_struct command_msg {
   nx_uint16_t cmd;
 } command_msg_t;

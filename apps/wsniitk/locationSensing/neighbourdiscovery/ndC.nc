@@ -47,9 +47,9 @@ implementation {
   message_t packet;
   int16_t wait;
   uint16_t pdb_addr = AM_BROADCAST_ADDR;
-  uint8_t iters = 0;  
+  uint16_t iters = 0;  
   bool im_running = FALSE, results = FALSE;
-  int i,j,k;
+  int i,j,k,lim=1;
   int16_t x,y;
   float _x,_y;
   float factor;
@@ -203,7 +203,7 @@ implementation {
 	test_count = 0;
       }
       initializeArr();
-      dbg("ndC","CC %f %f\n",(float)x/10,(float)y/10);
+      dbg("ndC","CC %d %d %f %f\n",TOS_NODE_ID,iters,(float)x/10,(float)y/10);
       if (test_count == 3) {
 	finished_discovery = 1;
 	dbg("ndC","DONE %d %f, %f \n",TOS_NODE_ID,(float)x/10,(float)y/10);
@@ -221,6 +221,8 @@ implementation {
 
   bool computeNewCoordinate(void){
     iters++;
+    if (iters%200 == 0)
+      lim++;
     dbg("ndC","Finishing Iter: %d\n", iters);
     factor /= n;
 
@@ -230,7 +232,7 @@ implementation {
     _y /= n;
     _y += y*(1-factor);
 
-    if ((fabs(_x - x) < 1 ) && (fabs(_y - y) < 1)){
+    if ((fabs(_x - x) < lim ) && (fabs(_y - y) < lim)){
       x = (int16_t)_x;
       y = (int16_t)_y;      
       return FALSE;
@@ -273,13 +275,15 @@ implementation {
       return bufPtr;
     } else {
       rcm = (neighbour_discover_msg_t*) payload;
-
+      call nd_state.forceState(N_DISCOVER);
 #ifndef TOSSIM      
       estimated_distance = computeDistance(call PacketRSSI.get (bufPtr));
 #else
       //temp_n->p_db = 84 + (84 * (int8_t)(call PacketRSSI.strength(bufPtr))) / 91;
       estimated_distance = computeDistance(-40 - (int8_t)(call PacketRSSI.strength(bufPtr)));
 #endif
+      if(estimated_distance > 50)
+	return bufPtr;
       requireUpdate |= (rcm->updated);
       computed_distance = sqrt(SQR(rcm->x - x) + SQR(rcm->y - y));
       _factor = 1-((float)estimated_distance)*10 / computed_distance;

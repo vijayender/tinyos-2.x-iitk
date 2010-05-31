@@ -12,8 +12,8 @@ if (os.path.isfile(fname)):
     print "file aready exists!"
     exit(0)
 
-plot(-30,-30)
-plot(30,30)
+plot(-100,-100)
+plot(100,100)
 title('Left click to add points. Right click to save to file'+fname)
 coords = []
 i=0
