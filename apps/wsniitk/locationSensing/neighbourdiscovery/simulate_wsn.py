@@ -85,9 +85,10 @@ if __name__ == "__main__":
         for j in xrange(0,i):
             if i == j:
                 continue
-            r.add(i, j, distances[i,j])
-            r.add(j, i, distances[i,j])
-            print i, j,  distances[i,j], distance(locs[i], locs[j]), w.ed_from_pdb(distances[i,j])
+            if (distance(locs[i], locs[j])) < 45:
+                r.add(i, j, distances[i,j])
+                r.add(j, i, distances[i,j])
+                print i, j,  distances[i,j], distance(locs[i], locs[j]), w.ed_from_pdb(distances[i,j])
     
     simulate(100)
     print "time is now", t.time()

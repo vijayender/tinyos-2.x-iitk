@@ -14,7 +14,7 @@ if __name__ == "__main__":
     y_ed = w.ed_from_d(x)
     t = x
     y_mdl2 = np.floor(-1.3295e-6*t**5 + 0.00021291*t**4 - 0.013029*t**3 + 0.37402*t**2 - 5.1057*t + 40.086)
-
+    y_mdl3 = -1.3295e-6*t**5 + 0.00021291*t**4 - 0.013029*t**3 + 0.37402*t**2 - 5.1057*t + 40.086
     curr=y_mdl2[0];
     start=x[0];
     x_new = []
@@ -58,3 +58,6 @@ if __name__ == "__main__":
     # print x_new[0], x_new[len(x_new)-1], len(x_new)
     # print y_new[0], y_new[len(y_new)-1], len(y_new)
     print [int(round(i)) for i in y_new]
+    #print "#error"
+    #for (xx,yy) in zip(x,x_re2):
+    #    print xx, yy

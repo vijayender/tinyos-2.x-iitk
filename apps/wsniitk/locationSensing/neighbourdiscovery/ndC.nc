@@ -465,7 +465,7 @@ implementation {
       post test_syndicate();
     } else if (im_running) {
       a = call im.test();
-      if (fabs(a) > 1e-10) {
+      if (fabs(a) > 1) {
 	post im_iterate();
 	i = 0;
       } else {
