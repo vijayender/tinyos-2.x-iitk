@@ -279,8 +279,9 @@ implementation {
 #ifndef TOSSIM      
       estimated_distance = computeDistance(call PacketRSSI.get (bufPtr));
 #else
-      //temp_n->p_db = 84 + (84 * (int8_t)(call PacketRSSI.strength(bufPtr))) / 91;
-      estimated_distance = computeDistance(-40 - (int8_t)(call PacketRSSI.strength(bufPtr)));
+      //dbg("ndC","CCCC %d\n",84 + (84 * (int8_t)(call PacketRSSI.strength(bufPtr))) / 91);
+      estimated_distance = computeDistance(84 + (84 * (int8_t)(call PacketRSSI.strength(bufPtr))) / 91);
+      //estimated_distance = computeDistance(-40 - (int8_t)(call PacketRSSI.strength(bufPtr)));
 #endif
       if(estimated_distance > 50)
 	return bufPtr;
@@ -339,7 +340,7 @@ implementation {
   {
     /* dbg("ndC","ComputeDistance %d %f\n", dis, (EXPRS(dis))); */
     uint8_t ind;
-    return dis;
+    //return dis;
     ind = 40 - dis;
     if ( ind < 0 )
       return 0.1;
